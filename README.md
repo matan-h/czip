@@ -83,13 +83,14 @@ z= Zip(
          with_print=True or False 
         # if set to False,the program not print anything.this can exists also in INI
 )
+
 #the automatically is:
 z.create_zip()
 #but you can acsess
 z._find_names() #to find names of file with glob
 z._create_cmd()#to create the cmd script
 from py_to_zip.py_to_zip import _parse_cmd_argev 
-_parse_cmd_argev(["file"])#this is for the cmd script....
+_parse_cmd_argev(["file"])#and this is for the cmd script....
 ```
 
 ## Author
@@ -100,6 +101,8 @@ matan h
 
 This project is licensed under the MIT License.
 
-##created by
+
+
+## created by
 
 this library was created and updated by [libtool](https://github.com/matan-h/libtool)
