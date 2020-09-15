@@ -100,6 +100,6 @@ matan h
 
 This project is licensed under the MIT License.
 
-###created by
+##created by
 
 this library was created and updated by [libtool](https://github.com/matan-h/libtool)
