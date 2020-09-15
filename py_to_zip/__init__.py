@@ -1,17 +1,14 @@
 from py_to_zip.py_to_zip import by_config
 
 __title__ = 'py_to_zip'
-__description__ = 'description of the library.'
-__url__ = 'your website url (or github url)'
+__description__ = 'libtool is a library for creating a zip with command file from python files.'
+__url__ = 'https://github.com/matan-h/czip'
 __version__ = '0.0.1'
-__author__ = 'your name'
-__author_email__ = 'your email'
+__author__ = 'matan h'
+__author_email__ = 'matan.honig2@gmail.com'
 __license__ = 'MIT'
 if __name__ == "__main__":
     # you can add ini Directly to function
-
-
-
     by_config(
 
         dict(main_file="py_to_zip.py",  # the main file would be run with the cmd file
