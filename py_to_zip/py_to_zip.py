@@ -23,7 +23,7 @@ class Zip:
                  with_print=True):
         """
         :param main_file: the main file would be run with the cmd file
-        :param name: the name of project,in default("by file") it will be name of file
+        :param name: you can leave empty, default value is the name of your main file without extension
 
         :param glob_pattern:the glob patterns for search the files to the zip
         the glob patterns split by comma (example:*.py,*.ini,data/*)
@@ -40,6 +40,9 @@ class Zip:
 
         self.python_exe = python_exe
 
+        if with_print == "0" or with_print == "1":
+            with_print = int(with_print)
+
         self.with_print = with_print
         if name == "by file":
             self.main_name = os.path.splitext(main_file)[0]
@@ -53,7 +56,7 @@ class Zip:
 
     def _create_cmd(self):
         """create the cmd file"""
-        cmd = f"""{self.python_exe} {self.main_name}-src\\{self.main_file}"""
+        cmd = f"""{self.python_exe} \"{self.main_name}-src\\{self.main_file}\""""
         with open(self.cmd_file, "w") as cmd_file_io:
             cmd_file_io.write(cmd)
         if self.with_print:
@@ -77,6 +80,7 @@ class Zip:
             for file in names:
                 zip_ref.write(file, self.main_name + "-src\\" + file)
             zip_ref.write(self.cmd_file)
+            os.remove(self.cmd_file)
         if self.with_print:
             print("done create zip from files and folders:", ",".join(names))
 
@@ -117,7 +121,6 @@ def by_config(config_dict):
                 if key not in real_values:
                     d = difflib.get_close_matches(key, real_values)
                     if d:
-
                         s = TypeError((pattern + "Did you mean \"{}\"?").format(key, d[0]))
                     else:
                         s = TypeError(pattern.format(key))

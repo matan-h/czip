@@ -1,43 +1,49 @@
 # py-to-zip
 
 
-libtool is a Python library for creating a zip from python files,
-so you can send the zip to another computer.
-it also create a command file so you can acsess with one command
+py-to-zip is a Python library that creates a zip file and a command file 
+from your python code. The result is a zip file that includes the source python files 
+and a file that can be double-clicked (on Windows) in order to run the main python file.
+The receiving computer should have Python installed, but it is not necessary for the receiver 
+to open a python IDE or a command line window.  
 
-py-to-zip runs in Python 3+ and only in Windows.
+py-to-zip runs in Python 3+ and only in Windows. The receiving computer can have all Python versions 
+if your source code supports them.
 
 ## Instructions
-You need to make a settings.ini like this:
+You need to make a settings.ini file like this:
 
 
 ```ini
 [settings]
 main_file=main.py
-#the main file would be run with the cmd file
+# The main file would be run with the cmd file
 name=name of project
-#in default("by file") it will be name of file
+# You can leave empty, default value is the name of your main file without extension
 
 glob_pattern=*.py,data/*.png,data/**/*.txt
-# the glob patterns for search the files to the zip
+# The glob patterns for all the files to add the zip, separated by commas. 
+# Use ** only if using python 3.5 and higher.
 glob_recursive=1
-# set the recursive for the glob function,this is only to python 3.5+
+# Set the recursive variable for the glob function,this is only to python 3.5+
+# If python version is lower, ignores this value.
 
 cmd_file=czip.bat
-#the name of cmd file,(like run.cmd or play.bat),in default it will be name of file
+# The name of cmd file,(like run.cmd or play.bat)
+# By default it will be <main_file>.cmd
 python_exe=py
-#the python name who can access from the command-line.(py,python,python3,...)
-
+# The python command that is to be run on receiving computer (py,python,python3,...)
 ```
-the main file have to be find by glob.
+**Important:** The main file must be found by glob using the pattern glob_pattern.
 
-To create zip from ini:
+To create zip from ini using command line:
 ```
 czip {your ini file}
-or
+# or
 CZip.bat {your ini file}
 ```
-And the py-to-zip creates the zip and command file automatically.
+And the py-to-zip creates the zip that includes source and command file 
+automatically in the current folder.
 
 ### Access from python
 To access the py-to-zip from a python file:
@@ -45,52 +51,51 @@ To access the py-to-zip from a python file:
 from py_to_zip.py_to_zip import by_config
 
 
-# its add ini Directly to function
+# create ini parameters in python code
 
 by_config(
-    dict(main_file="py_to_zip.py",  # the main file would be run with the cmd file
-         name="py-to-zip",  # the name of project,in default("by file") it will be name of file
+    dict(main_file="py_to_zip.py", 
+         name="py-to-zip", 
          glob_pattern="*.py,data\\**\\*.txt",
-         # the glob patterns for search the files to the zip (to use ** you need glob_recursive)
-         glob_recursive=True,  # set the recursive for the glob function,this is only to python 3.5+
-         cmd_file="czip.bat",  # the name of cmd file,(like run.cmd or play.bat),in default it will be name of file
+         glob_recursive=True, 
+         cmd_file="czip.bat", 
          python_exe="py",
          )
 )
 ```
-And the py-to-zip creates the zip and command file automatically.
+And the py-to-zip creates the zip that includes source and command file 
+automatically in the current folder, without additional command line commands.
 
-
-### Installing
+## Installation
 
 To install with pip-
 type in terminal:
 ```
-(sudo) pip install py_to_zip
+(python -m) pip install py_to_zip
 ```
 ## Additional options
-if you want to use one function without another function
+Additional options when calling from Python file:
 ```python
 from py_to_zip.py_to_zip import Zip
 z= Zip(
-         main_file="py_to_zip.py",  # the main file would be run with the cmd file
-         name="py-to-zip",  # the name of project,in default("by file") it will be name of file
-         glob_pattern="*.py,data\\**\\*.txt",
-         # the glob patterns for search the files to the zip (to use ** you need glob_recursive)
-         glob_recursive=True,  # set the recursive for the glob function,this is only to python 3.5+
-         cmd_file="czip.bat",  # the name of cmd file,(like run.cmd or play.bat),in default it will be name of file
-         python_exe="py"
-         with_print=True or False 
-        # if set to False,the program not print anything.this can exists also in INI
+         main_file = "py_to_zip.py",  
+         name = "py-to-zip", 
+         glob_pattern = "*.py,data\\**\\*.txt",
+         glob_recursive = True,  
+         cmd_file = "czip.bat",  
+         python_exe = "py"
+         with_print = True or False 
+        # if set to False,the program will not print anything.this can be used also in INI
 )
 
-#the automatically is:
+#to do the same as before you can use the command:
 z.create_zip()
-#but you can acsess
+#but you can also acsess
 z._find_names() #to find names of file with glob
-z._create_cmd()#to create the cmd script
+z._create_cmd() #to create the cmd script
+### or alternatively
 from py_to_zip.py_to_zip import _parse_cmd_argev 
-_parse_cmd_argev(["file"])#and this is for the cmd script....
+_parse_cmd_argev(["file.ini"])#exactly likce czip {your ini file}
 ```
 
 ## Author
@@ -101,8 +106,6 @@ matan h
 
 This project is licensed under the MIT License.
 
-
-
 ## created by
 
-this library was created and updated by [libtool](https://github.com/matan-h/libtool)
+This library was created and uploaded using [libtool](https://github.com/matan-h/libtool)
