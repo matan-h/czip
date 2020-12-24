@@ -127,6 +127,8 @@ class Zip:
                 cfile = fn + ".pyc"
                 py_compile.compile(file, cfile=cfile)
                 nl.append(cfile)
+            else:
+                nl.append(file)
         return nl
 
 
