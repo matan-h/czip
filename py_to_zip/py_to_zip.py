@@ -21,8 +21,8 @@ class Zip:
                  glob_recursive=False,
                  cmd_file="by name or by file (with file extension)",
                  python_exe="py",
-                 quiet=True,
-                 compile_to_pyc = False):
+                 quiet=False,
+                 compile_to_pyc=False):
         """
         :param main_file: the main file would be run with the cmd file
         :param name: you can leave empty, default value is the name of your main file without extension
@@ -46,10 +46,9 @@ class Zip:
             quiet = int(quiet)
         self.nquiet = not quiet
 
-        if compile_to_pyc in ["0","1"]:
+        if compile_to_pyc in ["0", "1"]:
             compile_to_pyc = int(compile_to_pyc)
         self.compile_to_pyc = compile_to_pyc
-
 
         if name == "by file":
             self.main_name = os.path.splitext(main_file)[0]
@@ -63,7 +62,7 @@ class Zip:
 
     def _create_cmd(self):
         """create the cmd file"""
-        cmd = f"""@echo off\n{self.python_exe} \"{self.main_name}-src\\{self.main_file}\" @echo off"""
+        cmd = f"""@echo off\n{self.python_exe} \"{self.main_name}-src\\{self.main_file}\" %*\n@echo off"""
 
         with open(self.cmd_file, "w") as cmd_file_io:
             cmd_file_io.write(cmd)
@@ -88,10 +87,14 @@ class Zip:
         if self.compile_to_pyc:
             names = self.compile(names)
 
-
         with zipfile.ZipFile(self.main_name + ".zip", "w") as zip_ref:
             for file in names:
                 zip_ref.write(file, self.main_name + "-src\\" + file)
+                if self.compile_to_pyc:
+                    fn, ex = os.path.splitext(file)
+                    if ex == ".pyc":
+                        os.remove(file)
+
             zip_ref.write(self.cmd_file)
 
             os.remove(self.cmd_file)
@@ -119,11 +122,11 @@ class Zip:
     def compile(self, names):
         nl = []
         for file in names:
-            fn,ex = os.path.splitext(file)
+            fn, ex = os.path.splitext(file)
             if ex == ".py":
-                cfile = fn+".pyc"
-                py_compile.compile(file,cfile=cfile)
-                nl.append(file)
+                cfile = fn + ".pyc"
+                py_compile.compile(file, cfile=cfile)
+                nl.append(cfile)
         return nl
 
 
