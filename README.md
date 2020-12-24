@@ -84,7 +84,7 @@ z= Zip(
          glob_recursive = True,  
          cmd_file = "czip.bat",  
          python_exe = "py",
-         with_print = True or False,
+         quiet = True or False,
         # if set to False,py-to-zip will not print anything.
         # this can be used also in INI file
 )

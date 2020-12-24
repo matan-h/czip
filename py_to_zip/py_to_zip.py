@@ -1,6 +1,7 @@
 import glob
 import itertools
 import os
+import py_compile
 import shutil
 import sys
 import zipfile
@@ -20,7 +21,8 @@ class Zip:
                  glob_recursive=False,
                  cmd_file="by name or by file (with file extension)",
                  python_exe="py",
-                 with_print=True):
+                 quiet=True,
+                 compile_to_pyc = False):
         """
         :param main_file: the main file would be run with the cmd file
         :param name: you can leave empty, default value is the name of your main file without extension
@@ -40,10 +42,15 @@ class Zip:
 
         self.python_exe = python_exe
 
-        if with_print == "0" or with_print == "1":
-            with_print = int(with_print)
+        if quiet == "0" or quiet == "1":
+            quiet = int(quiet)
+        self.nquiet = not quiet
 
-        self.with_print = with_print
+        if compile_to_pyc in ["0","1"]:
+            compile_to_pyc = int(compile_to_pyc)
+        self.compile_to_pyc = compile_to_pyc
+
+
         if name == "by file":
             self.main_name = os.path.splitext(main_file)[0]
         else:
@@ -60,7 +67,7 @@ class Zip:
 
         with open(self.cmd_file, "w") as cmd_file_io:
             cmd_file_io.write(cmd)
-        if self.with_print:
+        if self.nquiet:
             print("done create command file")
 
     def create_zip(self):
@@ -74,15 +81,21 @@ class Zip:
 
         names = self._find_names()
         names = list(itertools.chain.from_iterable(names))
+        # print(names)
         if self.main_file not in names:
             raise FileNotFoundError("the main_file \"{}\" not not found in glob list".format(self.main_file))
+
+        if self.compile_to_pyc:
+            names = self.compile(names)
+
 
         with zipfile.ZipFile(self.main_name + ".zip", "w") as zip_ref:
             for file in names:
                 zip_ref.write(file, self.main_name + "-src\\" + file)
             zip_ref.write(self.cmd_file)
+
             os.remove(self.cmd_file)
-        if self.with_print:
+        if self.nquiet:
             print("done create zip from files and folders:", ",".join(names))
 
     def _find_names(self):
@@ -103,6 +116,16 @@ class Zip:
             # ########################### files filter
             return files_list
 
+    def compile(self, names):
+        nl = []
+        for file in names:
+            fn,ex = os.path.splitext(file)
+            if ex == ".py":
+                cfile = fn+".pyc"
+                py_compile.compile(file,cfile=cfile)
+                nl.append(file)
+        return nl
+
 
 def by_config(config_dict):
     """
@@ -115,8 +138,8 @@ def by_config(config_dict):
     except TypeError as type_error:
 
         if "__init__() got an unexpected keyword argument" in str(type_error):
-            pattern = "Zip got an unexpected keyword argument \"{}\". "
-            real_values = "main_file,name,glob_pattern,glob_recursive,cmd_file,python_exe,with_print".split(",")
+            pattern = "cZip got an unexpected keyword argument \"{}\". "
+            real_values = "main_file,name,glob_pattern,glob_recursive,cmd_file,python_exe,quiet".split(",")
             error_list = []
             for key in config_dict.keys():
                 if key not in real_values:
@@ -136,7 +159,8 @@ def by_config(config_dict):
 def _parse_cmd_argev(args):
     """this is for cmd command"""
     if not args:
-        raise TypeError("you need to type the filename after the command")
+        print("you need to type the filename after the command")
+        exit(1)
     conf = configparser.ConfigParser()
     conf.read(args[0])
     by_config(dict(conf.items('settings')))
