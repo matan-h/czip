@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
     name='py-to-zip',
-    version='0.0.5',
+    version='0.0.6',
     license='MIT',
     description='py-to-zip is a Python library that creates a zip file and a command file from your python code',
     author='matan h',
