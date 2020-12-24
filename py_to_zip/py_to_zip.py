@@ -62,7 +62,7 @@ class Zip:
 
     def _create_cmd(self):
         """create the cmd file"""
-        cmd = f"""@echo off\n{self.python_exe} \"{self.main_name}-src\\{self.main_file}\" %*\n@echo off"""
+        cmd = f"""@echo off\n{self.python_exe} \"{self.main_name}-src\\{self.main_file if not self.compile_to_pyc else os.path.splitext(self.main_file)[0] + '.pyc'}\" %*\n@echo off"""
 
         with open(self.cmd_file, "w") as cmd_file_io:
             cmd_file_io.write(cmd)
